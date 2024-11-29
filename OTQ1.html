@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Old Testament Quiz</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .quiz-container {
+            background-color: #ffffff;
+            padding: 20px;
+            width: 60%;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+        }
+        .quiz-content {
+            flex: 3;
+        }
+        .score-container {
+            flex: 1;
+            margin-left: 20px;
+            padding: 10px;
+            background-color: #e8f5e9;
+            border-radius: 5px;
+            text-align: center;
+            font-weight: bold;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .stimulus {
+            background-color: #f0f4c3;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            font-style: italic;
+        }
+        .question-number {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .question-text {
+            margin-bottom: 20px;
+        }
+        .answer-button {
+            display: block;
+            width: 100%;
+            margin: 10px 0;
+            padding: 10px;
+            background-color: #42a5f5;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            text-align: left;
+        }
+        .answer-button:hover {
+            background-color: #1e88e5;
+        }
+        #explanation {
+            background-color: #fff3cd;
+            padding: 10px;
+            margin-top: 20px;
+            border-radius: 5px;
+            font-size: 14px;
+            display: none;
+        }
+        #next-btn {
+            margin-top: 20px;
+            display: none;
+            padding: 10px;
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        #next-btn:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="quiz-container">
+        <div class="quiz-content">
+            <h1>Quiz</h1>
+            <div id="name-section">
+                <label for="name">Hey there, enter your name?:</label>
+                <input type="text" id="name" placeholder="what's your namefquiz?" required>
+                <button id="start-btn">Start Quiz</button>
+            </div>
+            <div id="quiz-section" style="display:none;">
+                <div id="stimulus" class="stimulus"></div>
+                <p class="question-number" id="question-number"></p>
+                <p class="question-text" id="question-text"></p>
+                <div id="choices-container"></div>
+                <div id="explanation"></div>
+                <button id="next-btn">Next Question</button>
+            </div>
+            <div id="result-section" style="display:none;">
+                <h2>Quiz Completed!</h2>
+                <p id="result-text"></p>
+            </div>
+        </div>
+        <div class="score-container">
+            <p>Correct Answers So Far:</p>
+            <p id="score-counter">0</p>
+        </div>
+    </div>
+
+    <script>
+const questions = [
+    {
+        question: "Who built the ark to survive the great flood?",
+        choices: [
+            "Abraham",
+            "Moses",
+            "Noah",
+            "David"
+        ],
+        correctAnswer: 2,
+        explanation: "Noah built the ark to survive the great flood, as instructed by God. Abraham and Moses were important figures, but they did not build the ark."
+    },
+    {
+        question: "What did God create on the first day of creation?",
+        choices: [
+            "The sun and moon",
+            "Light",
+            "Animals",
+            "Plants"
+        ],
+        correctAnswer: 1,
+        explanation: "On the first day, God said, 'Let there be light.' The sun and moon were created later on the fourth day."
+    },
+    {
+        question: "Who led the Israelites out of Egypt?",
+        choices: [
+            "Joshua",
+            "Moses",
+            "Aaron",
+            "Joseph"
+        ],
+        correctAnswer: 1,
+        explanation: "Moses led the Israelites out of Egypt during the Exodus. Joshua led them later into the Promised Land."
+    },
+    {
+        question: "What was the name of the garden where Adam and Eve lived?",
+        choices: [
+            "The Garden of Gethsemane",
+            "The Garden of Eden",
+            "The Garden of Paradise",
+            "The Promised Land"
+        ],
+        correctAnswer: 1,
+        explanation: "Adam and Eve lived in the Garden of Eden. The Garden of Gethsemane appears in the New Testament."
+    },
+    {
+        question: "Who was swallowed by a big fish for three days?",
+        choices: [
+            "Elijah",
+            "Jonah",
+            "Daniel",
+            "Job"
+        ],
+        correctAnswer: 1,
+        explanation: "Jonah was swallowed by a big fish because he tried to run away from God's command."
+    },
+    {
+        question: "What did God give Moses on Mount Sinai?",
+        choices: [
+            "The Ark of the Covenant",
+            "The Ten Commandments",
+            "The Book of Psalms",
+            "The Tower of Babel"
+        ],
+        correctAnswer: 1,
+        explanation: "God gave Moses the Ten Commandments on Mount Sinai. The Ark of the Covenant came later to hold them."
+    },
+    {
+        question: "Who was the strongest man in the Bible?",
+        choices: [
+            "David",
+            "Samson",
+            "Goliath",
+            "Saul"
+        ],
+        correctAnswer: 1,
+        explanation: "Samson was the strongest man in the Bible. His strength came from God and his uncut hair."
+    },
+    {
+        question: "What food did God provide the Israelites in the desert?",
+        choices: [
+            "Manna",
+            "Bread",
+            "Fish",
+            "Honey"
+        ],
+        correctAnswer: 0,
+        explanation: "God provided manna for the Israelites to eat during their journey in the wilderness."
+    },
+    {
+        question: "Who was thrown into a den of lions but was not harmed?",
+        choices: [
+            "Elijah",
+            "Daniel",
+            "Joseph",
+            "Noah"
+        ],
+        correctAnswer: 1,
+        explanation: "Daniel was thrown into a den of lions for praying to God, but God protected him from harm."
+    },
+    {
+        question: "Who defeated Goliath with a slingshot and a stone?",
+        choices: [
+            "Moses",
+            "Joshua",
+            "David",
+            "Saul"
+        ],
+        correctAnswer: 2,
+        explanation: "David defeated the giant Goliath with a slingshot, trusting in God's strength."
+    },
+    {
+        question: "Who was the first man created by God?",
+        choices: [
+            "Noah",
+            "Adam",
+            "Abraham",
+            "Moses"
+        ],
+        correctAnswer: 1,
+        explanation: "Adam was the first man created by God. Eve was created from one of Adam's ribs."
+    },
+    {
+        question: "What city did God destroy because of its wickedness?",
+        choices: [
+            "Jerusalem",
+            "Babylon",
+            "Sodom",
+            "Nineveh"
+        ],
+        correctAnswer: 2,
+        explanation: "God destroyed Sodom and Gomorrah because of their great wickedness. Lot and his family were saved."
+    },
+    {
+        question: "What did David use to write many of the Psalms?",
+        choices: [
+            "A harp",
+            "A pen",
+            "A sword",
+            "A flute"
+        ],
+        correctAnswer: 0,
+        explanation: "David used a harp to compose many of the Psalms, which are songs of worship and prayer."
+    },
+    {
+        question: "Who was thrown into a fiery furnace but survived?",
+        choices: [
+            "Daniel",
+            "Shadrach, Meshach, and Abednego",
+            "Elijah",
+            "Ezra"
+        ],
+        correctAnswer: 1,
+        explanation: "Shadrach, Meshach, and Abednego were thrown into a fiery furnace, but God protected them from harm."
+    },
+    {
+        question: "What is the name of the tower where people tried to reach the heavens?",
+        choices: [
+            "The Tower of Jerusalem",
+            "The Tower of Babel",
+            "The Tower of Zion",
+            "The Tower of Sinai"
+        ],
+        correctAnswer: 1,
+        explanation: "The Tower of Babel was built by people trying to reach heaven, but God confused their languages."
+    },
+    {
+        question: "Who was the father of many nations according to God's promise?",
+        choices: [
+            "Abraham",
+            "Isaac",
+            "Jacob",
+            "Joseph"
+        ],
+        correctAnswer: 0,
+        explanation: "Abraham was promised by God to be the father of many nations and was given descendants as numerous as the stars."
+    },
+    {
+        question: "What was the name of the boy who heard God calling him at night?",
+        choices: [
+            "Samuel",
+            "David",
+            "Joseph",
+            "Joshua"
+        ],
+        correctAnswer: 0,
+        explanation: "Samuel heard God's voice calling him at night when he was a young boy living in the temple."
+    },
+    {
+        question: "What was the name of Moses' brother who helped him speak to Pharaoh?",
+        choices: [
+            "Aaron",
+            "Joshua",
+            "Caleb",
+            "Elijah"
+        ],
+        correctAnswer: 0,
+        explanation: "Aaron, Moses' brother, helped him by speaking to Pharaoh on his behalf."
+    },
+    {
+        question: "What did God promise Noah after the flood?",
+        choices: [
+            "A new garden",
+            "A rainbow as a sign He would never flood the earth again",
+            "A new ark",
+            "More rain"
+        ],
+        correctAnswer: 1,
+        explanation: "God gave Noah a rainbow as a sign of His promise never to flood the earth again."
+    },
+    {
+        question: "Who was the prophet who challenged the prophets of Baal on Mount Carmel?",
+        choices: [
+            "Elijah",
+            "Elisha",
+            "Isaiah",
+            "Jeremiah"
+        ],
+        correctAnswer: 0,
+        explanation: "Elijah challenged the prophets of Baal on Mount Carmel to prove that the God of Israel is the true God."
+    }
+];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let userName = "";
+
+        const nameSection = document.getElementById('name-section');
+        const quizSection = document.getElementById('quiz-section');
+        const resultSection = document.getElementById('result-section');
+        const stimulusElement = document.getElementById('stimulus');
+        const questionNumberElement = document.getElementById('question-number');
+        const questionTextElement = document.getElementById('question-text');
+        const choicesContainer = document.getElementById('choices-container');
+        const explanationElement = document.getElementById('explanation');
+        const nextButton = document.getElementById('next-btn');
+        const scoreCounter = document.getElementById('score-counter');
+        const nameInput = document.getElementById('name');
+        const startButton = document.getElementById('start-btn');
+        const resultText = document.getElementById('result-text');
+
+        startButton.addEventListener('click', () => {
+            userName = nameInput.value.trim();
+            if (!userName) {
+                alert("Please enter your name to start the quiz.");
+                return;
+            }
+            nameSection.style.display = 'none';
+            quizSection.style.display = 'block';
+            loadQuestion();
+        });
+
+        function loadQuestion() {
+            const currentQuestion = questions[currentQuestionIndex];
+            questionNumberElement.textContent = `Question ${currentQuestionIndex + 1} of ${questions.length}`;
+            stimulusElement.textContent = currentQuestion.stimulus;
+            questionTextElement.textContent = currentQuestion.question;
+            choicesContainer.innerHTML = '';
+            explanationElement.style.display = 'none';
+            nextButton.style.display = 'none';
+
+            currentQuestion.choices.forEach((choice, index) => {
+                const button = document.createElement('button');
+                button.className = 'answer-button';
+                button.textContent = choice;
+                button.addEventListener('click', () => checkAnswer(index));
+                choicesContainer.appendChild(button);
+            });
+        }
+
+        function checkAnswer(selectedIndex) {
+            const currentQuestion = questions[currentQuestionIndex];
+            explanationElement.style.display = 'block';
+
+            if (selectedIndex === currentQuestion.correctAnswer) {
+                explanationElement.textContent = "Correct! " + currentQuestion.explanation;
+                score++;
+                scoreCounter.textContent = score; // Update score counter
+                nextButton.style.display = 'block';
+            } else {
+                explanationElement.textContent = "Incorrect. " + currentQuestion.explanation;
+                nextButton.style.display = 'block';
+            }
+        }
+
+        nextButton.addEventListener('click', () => {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < questions.length) {
+                loadQuestion();
+            } else {
+                endQuiz();
+            }
+        });
+
+        function endQuiz() {
+            quizSection.style.display = 'none';
+            resultSection.style.display = 'block';
+            resultText.textContent = `${userName}, you scored ${score} out of ${questions.length}!`;
+        }
+    </script>
+</body>
+</html>
